@@ -21,4 +21,4 @@ OPTIONS:
     -w, --wos <WOS>          Web of Science file path [default: wos.txt]
 ```
 
-<script id="asciicast-432679" src="https://asciinema.org/a/432679.js" async></script>
+<a href="https://asciinema.org/a/432679" target="_blank"><img src="https://asciinema.org/a/432679.svg" /></a>
