@@ -65,16 +65,11 @@ fn main() {
 
     // Get Data as DataFrames
     let mut scopus = read_file(rsl.scopus.as_str(), &config_scopus).expect("Could not read Scopus CSV file path");
-    println!("{:?}", scopus.shape());
     let wos = read_file(rsl.wos.as_str(), &config_wos).expect("Could not read Web of Science file path");
-    println!("{:?}", wos.shape());
 
     scopus.set_column_names(&["AU", "TI", "SO", "DI"]).expect("Cannot rename Scopus Columns");
-    println!("{:?}", scopus.shape());
     scopus.outer_join(&wos, "DI", "DI").expect("Could not join datasets");
-    println!("{:?}", scopus.shape());
-
-    // let df = combine_df(scopus, &wos, &config_scopus).expect("Could not combine datasets");
+    
     write_file(&scopus, rsl.output.as_str()).expect("Could not save combined file");
     println!("Done!");
 }
