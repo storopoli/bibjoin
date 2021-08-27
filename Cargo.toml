@@ -1,11 +1,13 @@
 [package]
-name = "RSL"
-authors = ["Jose Storopoli<thestoropoli@gmail.com>"]
-version = "0.1.0"
+name = "bibjoin"
+authors = ["Jose Storopoli <thestoropoli@gmail.com>"]
+version = "0.1.2"
 edition = "2018"
 license = "MIT"
 description = "Concatenates 2 CSVs files from Scopus and Web of Science by DOI and TITLE"
 crate-type = "bin"
+homepage = "https://github.com/storopoli/RSL"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
