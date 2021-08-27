@@ -33,16 +33,16 @@ fn write_file(df: &DataFrame, filepath: &str) -> Result<()> {
 
 }
 
-/// Program to Combine data from Scopus and Web of Science by DOI
+/// Program to combine data from Scopus and Web of Science by DOI
 #[derive(Clap, Debug)]
-#[clap(name = "rsl")]
+#[clap(name = "bibjoin")]
 struct RSL {
     /// Scopus CSV file path
-    #[clap(short, long, default_value = "scopus.csv")]
+    #[clap(short, long)]
     scopus: String,
 
     /// Web of Science file path
-    #[clap(short, long, default_value = "wos.txt")]
+    #[clap(short, long)]
     wos: String,
 
     /// Output file path
@@ -69,7 +69,7 @@ fn main() {
 
     scopus.set_column_names(&["AU", "TI", "SO", "DI"]).expect("Cannot rename Scopus Columns");
     scopus.outer_join(&wos, "DI", "DI").expect("Could not join datasets");
-    
+
     write_file(&scopus, rsl.output.as_str()).expect("Could not save combined file");
     println!("Done!");
 }

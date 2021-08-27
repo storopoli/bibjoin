@@ -2,14 +2,22 @@
 
 A simple program to run TSV files from Web of Science and CSV Files from Scopus into a single one by DOI.
 
-```bash
-❯ ./target/release/RSL -h
-rsl
+## Install
 
-Program to Combine data from Scopus and Web of Science by DOI
+```bash
+cargo install bibjoin
+```
+
+## Usage
+
+```bash
+❯ bibjoin -h
+bibjoin
+
+Program to combine data from Scopus and Web of Science by DOI
 
 USAGE:
-    RSL [OPTIONS]
+    bibjoin [OPTIONS]
 
 FLAGS:
     -h, --help       Print help information
@@ -21,4 +29,4 @@ OPTIONS:
     -w, --wos <WOS>          Web of Science file path [default: wos.txt]
 ```
 
-<a href="https://asciinema.org/a/432679" target="_blank"><img src="https://asciinema.org/a/432679.svg" /></a>
+[![asciicast](https://asciinema.org/a/2AbTvSaBiGeQU5UdcM95ZLERD.svg)](https://asciinema.org/a/2AbTvSaBiGeQU5UdcM95ZLERD)
