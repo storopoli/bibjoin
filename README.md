@@ -20,3 +20,5 @@ OPTIONS:
     -s, --scopus <SCOPUS>    Scopus CSV file path [default: scopus.csv]
     -w, --wos <WOS>          Web of Science file path [default: wos.txt]
 ```
+
+<script id="asciicast-432679" src="https://asciinema.org/a/432679.js" async></script>
