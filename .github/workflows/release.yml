@@ -64,6 +64,11 @@ jobs:
           rust: stable
           target: x86_64-apple-darwin
           cross: false
+        - build: macos-arm
+          os: macos-latest
+          rust: stable
+          target: aarch64-apple-darwin
+          cross: false
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
