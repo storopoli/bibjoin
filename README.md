@@ -1,6 +1,6 @@
 # Scopus/Web of Science RSL Combining Records
 
-A simple program to run TSV files from Web of Science and CSV Files from Scopus into a single one by DOI.
+Combine CSV/TSV files from Scopus and Web of Science by DOI.
 
 ## Install
 
