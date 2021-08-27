@@ -1,31 +1,41 @@
-name: Build, bump tag version and release
+name: CI
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  release:
-    name: Build and Release
-    runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        rust-toolchain:
+          - stable
+          - nightly
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build project
-        run: cargo build --release --locked
-      - name: Bump version and push tag/create release point
-        uses: anothrNick/github-tag-action@1.17.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
-        id: bump_version
-      - name: Upload binary to release
-        uses: svenstaro/upload-release-action@v1-release
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/alemanes
-          asset_name: alemanes-linux-amd64
-          tag: ${{ steps.bump_version.outputs.new_tag }}
-          overwrite: true
+    - name: Clone
+      uses: actions/checkout@v2
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          ~/.rustup
+          target
+        key: ${{ runner.os }}-${{ matrix.rust-toolchain }}
+    - name: Install Rust
+      run: |
+        rustup install ${{ matrix.rust-toolchain }}
+        rustup default ${{ matrix.rust-toolchain }}
+        rustup show
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
