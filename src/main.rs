@@ -69,8 +69,8 @@ fn main() {
     // Get Data as DataFrames
     let mut scopus = read_file(bibjoin.scopus.as_str(), &config_scopus)
         .expect("Could not read Scopus CSV file path");
-    let wos =
-        read_file(bibjoin.wos.as_str(), &config_wos).expect("Could not read Web of Science file path");
+    let wos = read_file(bibjoin.wos.as_str(), &config_wos)
+        .expect("Could not read Web of Science file path");
 
     // Normalize Columns
     scopus
