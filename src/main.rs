@@ -1,4 +1,3 @@
-#![allow(non_snake_case)]
 use clap::Clap;
 use polars::prelude::*;
 use std::fs::File;
@@ -32,13 +31,13 @@ fn write_file(df: &DataFrame, filepath: &str) -> Result<()> {
     CsvWriter::new(&mut file)
         .has_headers(true)
         .with_delimiter(b',')
-        .finish(&df)
+        .finish(df)
 }
 
 /// Program to combine data from Scopus and Web of Science by DOI
 #[derive(Clap, Debug)]
 #[clap(name = "bibjoin")]
-struct RSL {
+struct BibJoin {
     /// Scopus CSV file path
     #[clap(short, long)]
     scopus: String,
@@ -53,7 +52,7 @@ struct RSL {
 }
 fn main() {
     // Parse Stuff
-    let rsl = RSL::parse();
+    let bibjoin = BibJoin::parse();
 
     // Config Structs
     let config_scopus = Config {
@@ -68,10 +67,10 @@ fn main() {
     };
 
     // Get Data as DataFrames
-    let mut scopus = read_file(rsl.scopus.as_str(), &config_scopus)
+    let mut scopus = read_file(bibjoin.scopus.as_str(), &config_scopus)
         .expect("Could not read Scopus CSV file path");
     let wos =
-        read_file(rsl.wos.as_str(), &config_wos).expect("Could not read Web of Science file path");
+        read_file(bibjoin.wos.as_str(), &config_wos).expect("Could not read Web of Science file path");
 
     // Normalize Columns
     scopus
@@ -83,6 +82,6 @@ fn main() {
         .outer_join(&wos, "DI", "DI")
         .expect("Could not join datasets");
 
-    write_file(&df, rsl.output.as_str()).expect("Could not save combined file");
+    write_file(&df, bibjoin.output.as_str()).expect("Could not save combined file");
     println!("Done!");
 }
