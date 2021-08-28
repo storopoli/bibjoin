@@ -1,7 +1,7 @@
 # Scopus/Web of Science RSL Combining Records
 
 [![GitHub license](https://img.shields.io/github/license/storopoli/bibjoin)](https://github.com/storopoli/bibjoin/blob/main/LICENSE)
-[![Build status](https://github.com/storopoli/bibjoin/workflows/ci/badge.svg)](https://github.comstoropoli/bibjoin/workflows/actions)
+[![Build status](https://github.com/storopoli/bibjoin/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/storopoli/bibjoin/actions?workflow=Continuous+integration)
 [![Crates.io](https://img.shields.io/crates/v/bibjoin.svg)](https://crates.io/crates/bibjoin)
 
 Combine CSV/TSV files from Scopus and Web of Science by DOI.
