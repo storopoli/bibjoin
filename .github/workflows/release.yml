@@ -127,7 +127,7 @@ jobs:
 
     - name: Strip release binary (linux and macos)
       if: matrix.build == 'linux' || matrix.build == 'macos'
-      run: strip "target/${{ matrix.target }}/release/bj"
+      run: strip "target/${{ matrix.target }}/release/bibjoin"
 
     - name: Strip release binary (arm)
       if: matrix.build == 'linux-arm'
@@ -136,7 +136,7 @@ jobs:
           "$PWD/target:/target:Z" \
           rustembedded/cross:arm-unknown-linux-gnueabihf \
           arm-linux-gnueabihf-strip \
-          /target/arm-unknown-linux-gnueabihf/release/bj
+          /target/arm-unknown-linux-gnueabihf/release/bibjoin
     - name: Build archive
       shell: bash
       run: |
@@ -145,12 +145,11 @@ jobs:
         mkdir -p "$staging"
         cp {README.md,LICENSE} "$staging/"
         if [ "${{ matrix.os }}" = "windows-2019" ]; then
-          cp "target/${{ matrix.target }}/release/bj.exe" "$staging/"
+          cp "target/${{ matrix.target }}/release/bibjoin.exe" "$staging/"
           7z a "$staging.zip" "$staging"
           echo "ASSET=$staging.zip" >> $GITHUB_ENV
         else
-          # The man page is only generated on Unix systems. ¯\_(ツ)_/¯
-          cp "target/${{ matrix.target }}/release/bj" "$staging/"
+          cp "target/${{ matrix.target }}/release/bibjoin" "$staging/"
           tar czf "$staging.tar.gz" "$staging"
           echo "ASSET=$staging.tar.gz" >> $GITHUB_ENV
         fi
