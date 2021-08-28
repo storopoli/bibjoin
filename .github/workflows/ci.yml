@@ -1,5 +1,5 @@
 # adapted from https://github.com/BurntSushi/ripgrep/blob/master/.github/workflows/ci.yml
-name: ci
+name: CI
 on:
   pull_request:
   push:
