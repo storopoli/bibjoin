@@ -22,8 +22,12 @@ jobs:
     strategy:
       matrix:
         build:
+        - stable
+        - beta
         - nightly
         - nightly-musl
+        - nightly-32
+        - nightly-mips
         - nightly-arm
         - macos
         - win-msvc
@@ -32,6 +36,9 @@ jobs:
         - build: stable
           os: ubuntu-20.04
           rust: stable
+        - build: beta
+          os: ubuntu-20.04
+          rust: beta
         - build: nightly
           os: ubuntu-20.04
           rust: nightly
@@ -39,6 +46,14 @@ jobs:
           os: ubuntu-20.04
           rust: nightly
           target: x86_64-unknown-linux-musl
+        - build: nightly-32
+          os: ubuntu-20.04
+          rust: nightly
+          target: i686-unknown-linux-gnu
+        - build: nightly-mips
+          os: ubuntu-20.04
+          rust: nightly
+          target: mips64-unknown-linux-gnuabi64
         - build: nightly-arm
           os: ubuntu-20.04
           rust: nightly
