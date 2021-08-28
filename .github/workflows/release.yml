@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  create_release:
+  create-release:
     name: Create release
     runs-on: ubuntu-latest
     # Note this. We are going to use that in further jobs.
