@@ -1,5 +1,9 @@
 # Scopus/Web of Science RSL Combining Records
 
+[![GitHub license](https://img.shields.io/github/license/storopoli/bibjoin)](https://github.com/storopoli/bibjoin/blob/main/LICENSE)
+[![Build status](https://github.com/storopoli/bibjoin/workflows/ci/badge.svg)](https://github.comstoropoli/bibjoin/workflows/actions)
+[![Crates.io](https://img.shields.io/crates/v/bibjoin.svg)](https://crates.io/crates/bibjoin)
+
 Combine CSV/TSV files from Scopus and Web of Science by DOI.
 
 ## Install
@@ -29,4 +33,4 @@ OPTIONS:
     -w, --wos <WOS>          Web of Science file path
 ```
 
-[![asciicast](https://asciinema.org/a/2AbTvSaBiGeQU5UdcM95ZLERD.svg)](https://asciinema.org/a/2AbTvSaBiGeQU5UdcM95ZLERD)
+[![asciicast](https://asciinema.org/a/p5xtqrLKfkUGn31jisb285rhL.svg)](https://asciinema.org/a/p5xtqrLKfkUGn31jisb285rhL)
