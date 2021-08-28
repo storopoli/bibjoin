@@ -106,13 +106,12 @@ jobs:
         fetch-depth: 1
 
     - name: Install packages (Ubuntu)
-      if: matrix.os == 'ubuntu-18.04'
+      if: matrix.os == 'ubuntu-20.04'
       run: |
-        ci/ubuntu-install-packages
-    - name: Install packages (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        ci/macos-install-packages
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+        zsh xz-utils liblz4-tool musl-tools
+
     - name: Install Rust
       uses: actions-rs/toolchain@v1
       with:
@@ -152,7 +151,7 @@ jobs:
       shell: bash
       run: |
         outdir="$(ci/cargo-out-dir "${{ env.TARGET_DIR }}")"
-        staging="ripgrep-${{ needs.create-release.outputs.rg_version }}-${{ matrix.target }}"
+        staging="bibjoin-${{ needs.create-release.outputs.rg_version }}-${{ matrix.target }}"
         mkdir -p "$staging"/{complete,doc}
         cp {README.md,COPYING,UNLICENSE,LICENSE-MIT} "$staging/"
         cp {CHANGELOG.md,FAQ.md,GUIDE.md} "$staging/doc/"
