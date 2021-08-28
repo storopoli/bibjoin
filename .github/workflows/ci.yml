@@ -1,41 +1,115 @@
-name: CI
-
+# adapted from https://github.com/BurntSushi/ripgrep/blob/master/.github/workflows/ci.yml
+name: ci
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
-
-env:
-  CARGO_TERM_COLOR: always
-
+  push:
+  schedule:
+  - cron: '00 00 01 * *'
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-20.04
+  test:
+    name: test
+    env:
+      # For some builds, we use cross to test on 32-bit and big-endian
+      # systems.
+      CARGO: cargo
+      # When CARGO is set to CROSS, this is set to `--target matrix.target`.
+      TARGET_FLAGS:
+      # When CARGO is set to CROSS, TARGET_DIR includes matrix.target.
+      TARGET_DIR: ./target
+      # Emit backtraces on panics.
+      RUST_BACKTRACE: 1
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        rust-toolchain:
-          - stable
-          - nightly
+        build:
+        - nightly
+        - nightly-musl
+        - nightly-arm
+        - macos
+        - win-msvc
+        - win-gnu
+        include:
+        - build: stable
+          os: ubuntu-20.04
+          rust: stable
+        - build: nightly
+          os: ubuntu-20.04
+          rust: nightly
+        - build: nightly-musl
+          os: ubuntu-20.04
+          rust: nightly
+          target: x86_64-unknown-linux-musl
+        - build: nightly-arm
+          os: ubuntu-20.04
+          rust: nightly
+          target: arm-unknown-linux-gnueabihf
+        - build: macos
+          os: macos-latest
+          rust: nightly
+        - build: win-msvc
+          os: windows-2019
+          rust: nightly
+        - build: win-gnu
+          os: windows-2019
+          rust: nightly-x86_64-gnu
     steps:
-    - name: Clone
+    - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Cache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          ~/.rustup
-          target
-        key: ${{ runner.os }}-${{ matrix.rust-toolchain }}
+
     - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ matrix.rust }}
+        profile: minimal
+        override: true
+
+    - name: Use Cross
+      if: matrix.target != ''
       run: |
-        rustup install ${{ matrix.rust-toolchain }}
-        rustup default ${{ matrix.rust-toolchain }}
-        rustup show
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+        cargo install cross
+        echo "CARGO=cross" >> $GITHUB_ENV
+        echo "TARGET_FLAGS=--target ${{ matrix.target }}" >> $GITHUB_ENV
+        echo "TARGET_DIR=./target/${{ matrix.target }}" >> $GITHUB_ENV
+
+    - name: Show command used for Cargo
+      run: |
+        echo "cargo command is: ${{ env.CARGO }}"
+        echo "target flag is: ${{ env.TARGET_FLAGS }}"
+
+    - name: Build binary and all crates
+      run: ${{ env.CARGO }} build --verbose --all ${{ env.TARGET_FLAGS }}
+
+    # This is useful for debugging problems when the expected build artifacts
+    # (like shell completions and man pages) aren't generated.
+    - name: Show build.rs stderr
+      shell: bash
+      run: |
+        set +x
+        stderr="$(find "${{ env.TARGET_DIR }}/debug" -name stderr -print0 | xargs -0 ls -t | head -n1)"
+        if [ -s "$stderr" ]; then
+          echo "===== $stderr ===== "
+          cat "$stderr"
+          echo "====="
+        fi
+        set -x
+
+    - name: Run tests (sans cross)
+      if: matrix.target == ''
+      run: ${{ env.CARGO }} test --verbose --all ${{ env.TARGET_FLAGS }}
+
+  rustfmt:
+    name: rustfmt
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+        profile: minimal
+        components: rustfmt
+    - name: Check formatting
+      run: |
+        cargo fmt --all -- --check
