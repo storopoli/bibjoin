@@ -1,4 +1,4 @@
-use clap::Clap;
+use clap::{AppSettings, Clap};
 use polars::prelude::*;
 use std::fs::File;
 
@@ -34,9 +34,17 @@ fn write_file(df: &DataFrame, filepath: &str) -> Result<()> {
         .finish(df)
 }
 
+fn vstack_dfs(df: &mut DataFrame, other_df: &DataFrame) {
+    df.vstack_mut(other_df)
+        .expect("Could not combine datasets together");
+}
+
+fn drop_duplicates(df: &DataFrame, subset: &[String]) -> Result<DataFrame> {
+    df.drop_duplicates(true, Some(subset))
+}
 /// Program to combine data from Scopus and Web of Science by DOI
 #[derive(Clap, Debug)]
-#[clap(name = "bibjoin")]
+#[clap(setting = AppSettings::ColoredHelp)]
 struct BibJoin {
     /// Scopus CSV file path
     #[clap(short, long)]
@@ -57,12 +65,12 @@ fn main() {
     // Config Structs
     let config_scopus = Config {
         name: String::from("Scopus"),
-        cols: &["Authors", "Title", "Source title", "DOI"],
+        cols: &["Year", "Authors", "Title", "Source title", "DOI"],
         delimiter: b',',
     };
     let config_wos = Config {
         name: String::from("Web of Science"),
-        cols: &["AU", "TI", "SO", "DI"],
+        cols: &["PY", "AU", "TI", "SO", "DI"],
         delimiter: b'\t',
     };
 
@@ -72,16 +80,69 @@ fn main() {
     let wos = read_file(bibjoin.wos.as_str(), &config_wos)
         .expect("Could not read Web of Science file path");
 
-    // Normalize Columns
-    scopus
-        .set_column_names(&["AU", "TI", "SO", "DI"])
-        .expect("Cannot rename Scopus Columns");
+    // Append DataFrames
+    vstack_dfs(&mut scopus, &wos);
 
-    // Outer Join Scopus and WoS
-    let df = scopus
-        .outer_join(&wos, "DI", "DI")
-        .expect("Could not join datasets");
+    // Drop Duplicates
+    let df = drop_duplicates(&scopus, &[String::from("DOI")])
+        .expect("Could not drop duplicates from combined records");
 
     write_file(&df, bibjoin.output.as_str()).expect("Could not save combined file");
     println!("Done!");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use polars::df;
+
+    #[test]
+    fn vstack_shape() {
+        let mut scopus = df! [
+            "Year" => [2000, 2001, 2002],
+            "Authors" => ["a", "b", "c"],
+            "Title" => ["Title 1", "Title 2", "Title 3"],
+            "Source title" => ["Journal 1", "Journal 2", "Journal 3"],
+            "DOI" => ["1", "2", "3"]
+        ]
+        .unwrap();
+
+        let wos = df! [
+            "PY" => [2000, 2002, 2003],
+            "AU" => ["a", "c", "d"],
+            "TI" => ["Title 1", "Title 3", "Title 4"],
+            "SO" => ["Journal 1", "Journal 3", "Journal 4"],
+            "DI" => ["1", "3", "4"]
+        ]
+        .unwrap();
+
+        vstack_dfs(&mut scopus, &wos);
+
+        assert_eq!(scopus.shape(), (6, 5))
+    }
+
+    #[test]
+    fn drop_duplicates_shape() {
+        let mut scopus = df! [
+            "Year" => [2000, 2001, 2002],
+            "Authors" => ["a", "b", "c"],
+            "Title" => ["Title 1", "Title 2", "Title 3"],
+            "Source title" => ["Journal 1", "Journal 2", "Journal 3"],
+            "DOI" => ["1", "2", "3"]
+        ]
+        .unwrap();
+
+        let wos = df! [
+            "PY" => [2000, 2002, 2003],
+            "AU" => ["a", "c", "d"],
+            "TI" => ["Title 1", "Title 3", "Title 4"],
+            "SO" => ["Journal 1", "Journal 3", "Journal 4"],
+            "DI" => ["1", "3", "4"]
+        ]
+        .unwrap();
+
+        vstack_dfs(&mut scopus, &wos);
+        let df = drop_duplicates(&scopus, &[String::from("DOI")]).unwrap();
+        assert_eq!(df.shape(), (4, 5))
+    }
 }
