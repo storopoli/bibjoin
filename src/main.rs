@@ -65,12 +65,12 @@ fn main() {
     // Config Structs
     let config_scopus = Config {
         name: String::from("Scopus"),
-        cols: &["Year", "Authors", "Title", "Source title", "DOI"],
+        cols: &["Authors", "Title", "Source title", "DOI"],
         delimiter: b',',
     };
     let config_wos = Config {
         name: String::from("Web of Science"),
-        cols: &["PY", "AU", "TI", "SO", "DI"],
+        cols: &["AU", "TI", "SO", "DI"],
         delimiter: b'\t',
     };
 
@@ -99,7 +99,6 @@ mod tests {
     #[test]
     fn vstack_shape() {
         let mut scopus = df! [
-            "Year" => [2000, 2001, 2002],
             "Authors" => ["a", "b", "c"],
             "Title" => ["Title 1", "Title 2", "Title 3"],
             "Source title" => ["Journal 1", "Journal 2", "Journal 3"],
@@ -108,7 +107,6 @@ mod tests {
         .unwrap();
 
         let wos = df! [
-            "PY" => [2000, 2002, 2003],
             "AU" => ["a", "c", "d"],
             "TI" => ["Title 1", "Title 3", "Title 4"],
             "SO" => ["Journal 1", "Journal 3", "Journal 4"],
@@ -124,7 +122,6 @@ mod tests {
     #[test]
     fn drop_duplicates_shape() {
         let mut scopus = df! [
-            "Year" => [2000, 2001, 2002],
             "Authors" => ["a", "b", "c"],
             "Title" => ["Title 1", "Title 2", "Title 3"],
             "Source title" => ["Journal 1", "Journal 2", "Journal 3"],
@@ -133,7 +130,6 @@ mod tests {
         .unwrap();
 
         let wos = df! [
-            "PY" => [2000, 2002, 2003],
             "AU" => ["a", "c", "d"],
             "TI" => ["Title 1", "Title 3", "Title 4"],
             "SO" => ["Journal 1", "Journal 3", "Journal 4"],

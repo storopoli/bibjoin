@@ -36,3 +36,7 @@ OPTIONS:
 ### Animated GIF
 
 ![gif](examples/example.gif)
+
+## NOTE
+
+Export from Web Of Science as a TSV file with option `Full Record`.
