@@ -33,4 +33,6 @@ OPTIONS:
     -w, --wos <WOS>          Web of Science file path
 ```
 
-[![asciicast](https://asciinema.org/a/432787.svg)](https://asciinema.org/a/432787)
+### Animated GIF
+
+![gif](examples/example.gif)
