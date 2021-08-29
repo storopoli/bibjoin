@@ -1,11 +1,11 @@
 [package]
 name = "bibjoin"
 authors = ["Jose Storopoli <thestoropoli@gmail.com>"]
-version = "0.1.8"
+version = "0.1.9"
 edition = "2018"
 license = "MIT"
 description = "Combine CSV/TSV files from Scopus and Web of Science by DOI"
-homepage = "https://github.com/storopoli/RSL"
+homepage = "https://github.com/storopoli/bibjoin"
 readme = "README.md"
 
 [dependencies]
