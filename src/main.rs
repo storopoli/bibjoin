@@ -116,7 +116,7 @@ mod tests {
 
         vstack_dfs(&mut scopus, &wos);
 
-        assert_eq!(scopus.shape(), (6, 5))
+        assert_eq!(scopus.shape(), (6, 4))
     }
 
     #[test]
@@ -139,6 +139,6 @@ mod tests {
 
         vstack_dfs(&mut scopus, &wos);
         let df = drop_duplicates(&scopus, &[String::from("DOI")]).unwrap();
-        assert_eq!(df.shape(), (4, 5))
+        assert_eq!(df.shape(), (4, 4))
     }
 }
