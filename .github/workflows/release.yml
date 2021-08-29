@@ -22,6 +22,9 @@ jobs:
             artifact_name: D:\a\bibjoin\bibjoin
             asset_name: bibjoin-windows-amd64
     steps:
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build project
@@ -32,4 +35,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ matrix.artifact_name }}
           asset_name: ${{ matrix.asset_name }}
-          tag: ${{ github.event.client_payload.new_version }}
+          tag: ${{ steps.get_version.outputs.VERSION }}
