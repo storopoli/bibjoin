@@ -18,9 +18,6 @@ jobs:
           - os: macos-latest
             artifact_name:  target/release/bibjoin
             asset_name: bibjoin-macos-amd64
-          - os: windows-latest
-            artifact_name: D:\a\bibjoin\bibjoin
-            asset_name: bibjoin-windows-amd64
     steps:
       - name: Get the version
         id: get_version
