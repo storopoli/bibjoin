@@ -1,4 +1,5 @@
 use clap::{AppSettings, Clap};
+use polars::datatypes::DataType::*;
 use polars::prelude::*;
 use std::fs::File;
 
@@ -6,6 +7,37 @@ struct Config<'a> {
     name: String,
     cols: &'a [&'a str],
     delimiter: u8,
+}
+
+impl Config<'_> {
+    fn scopus() -> Self {
+        Config {
+            name: String::from("Scopus"),
+            cols: &[
+                "Year",
+                "Authors",
+                "Title",
+                "Source title",
+                "Volume",
+                "Issue",
+                "ISSN",
+                "Abstract",
+                "Author Keywords",
+                "Index Keywords",
+                "DOI",
+            ],
+            delimiter: b',',
+        }
+    }
+    fn wos() -> Self {
+        Config {
+            name: String::from("Web of Science"),
+            cols: &[
+                "PY", "AU", "TI", "SO", "VL", "IS", "SN", "AB", "DE", "ID", "DI",
+            ],
+            delimiter: b'\t',
+        }
+    }
 }
 
 fn vec_of_str(v: &[&str]) -> Vec<String> {
@@ -16,12 +48,13 @@ fn read_file(filepath: &str, config: &Config) -> Result<DataFrame> {
     // read from path
     let df = CsvReader::from_path(&filepath)?
         .with_delimiter(config.delimiter)
+        .with_dtypes_slice(Some(vec![Utf8; 999].as_slice()))
         .with_columns(Some(vec_of_str(config.cols)))
-        .infer_schema(None)
         .has_header(true)
         .finish()?;
+    let df_filtered = df.select(config.cols.to_vec())?;
     println!("{} file has: {} records", config.name, df.shape().0);
-    Ok(df)
+    Ok(df_filtered)
 }
 
 fn write_file(df: &DataFrame, filepath: &str) -> Result<()> {
@@ -62,17 +95,9 @@ fn main() {
     // Parse Stuff
     let bibjoin = BibJoin::parse();
 
-    // Config Structs
-    let config_scopus = Config {
-        name: String::from("Scopus"),
-        cols: &["Authors", "Title", "Source title", "DOI"],
-        delimiter: b',',
-    };
-    let config_wos = Config {
-        name: String::from("Web of Science"),
-        cols: &["AU", "TI", "SO", "DI"],
-        delimiter: b'\t',
-    };
+    // Configs
+    let config_scopus = Config::scopus();
+    let config_wos = Config::wos();
 
     // Get Data as DataFrames
     let mut scopus = read_file(bibjoin.scopus.as_str(), &config_scopus)
@@ -94,51 +119,40 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use polars::df;
+    use std::path::Path;
+
+    fn setup_scopus() -> DataFrame {
+        let config_scopus = Config::scopus();
+        let scopus_path = Path::new("examples/scopus.csv").to_str().unwrap();
+        read_file(scopus_path, &config_scopus).unwrap()
+    }
+
+    fn setup_wos() -> DataFrame {
+        let config_wos = Config::wos();
+        let wos_path = Path::new("examples/wos.txt").to_str().unwrap();
+        read_file(wos_path, &config_wos).unwrap()
+    }
 
     #[test]
     fn vstack_shape() {
-        let mut scopus = df! [
-            "Authors" => ["a", "b", "c"],
-            "Title" => ["Title 1", "Title 2", "Title 3"],
-            "Source title" => ["Journal 1", "Journal 2", "Journal 3"],
-            "DOI" => ["1", "2", "3"]
-        ]
-        .unwrap();
-
-        let wos = df! [
-            "AU" => ["a", "c", "d"],
-            "TI" => ["Title 1", "Title 3", "Title 4"],
-            "SO" => ["Journal 1", "Journal 3", "Journal 4"],
-            "DI" => ["1", "3", "4"]
-        ]
-        .unwrap();
+        // DataFrames
+        let mut scopus = setup_scopus();
+        let wos = setup_wos();
 
         vstack_dfs(&mut scopus, &wos);
 
-        assert_eq!(scopus.shape(), (6, 4))
+        assert_eq!(scopus.shape(), (95, 11))
     }
 
     #[test]
     fn drop_duplicates_shape() {
-        let mut scopus = df! [
-            "Authors" => ["a", "b", "c"],
-            "Title" => ["Title 1", "Title 2", "Title 3"],
-            "Source title" => ["Journal 1", "Journal 2", "Journal 3"],
-            "DOI" => ["1", "2", "3"]
-        ]
-        .unwrap();
-
-        let wos = df! [
-            "AU" => ["a", "c", "d"],
-            "TI" => ["Title 1", "Title 3", "Title 4"],
-            "SO" => ["Journal 1", "Journal 3", "Journal 4"],
-            "DI" => ["1", "3", "4"]
-        ]
-        .unwrap();
+        // DataFrames
+        let mut scopus = setup_scopus();
+        let wos = setup_wos();
 
         vstack_dfs(&mut scopus, &wos);
+
         let df = drop_duplicates(&scopus, &[String::from("DOI")]).unwrap();
-        assert_eq!(df.shape(), (4, 4))
+        assert_eq!(df.shape(), (62, 11))
     }
 }

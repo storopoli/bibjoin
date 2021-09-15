@@ -33,10 +33,6 @@ OPTIONS:
     -w, --wos <WOS>          Web of Science file path
 ```
 
-### Animated GIF
-
-![gif](examples/example.gif)
-
 ## NOTE
 
-Export from Web Of Science as a TSV file with option `Full Record`.
+Export from Web Of Science as a TSV file with option `Full Record and Cited References`.
