@@ -1,5 +1,5 @@
 use clap::{AppSettings, Clap};
-use polars::datatypes::DataType::*;
+use polars::datatypes::DataType::Utf8;
 use polars::prelude::*;
 use std::fs::File;
 
