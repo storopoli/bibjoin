@@ -1,8 +1,8 @@
 [package]
 name = "bibjoin"
 authors = ["Jose Storopoli <thestoropoli@gmail.com>"]
-version = "0.2.2"
-edition = "2018"
+version = "0.3.0"
+edition = "2021"
 license = "MIT"
 description = "Combine CSV/TSV files from Scopus and Web of Science by DOI"
 homepage = "https://github.com/storopoli/bibjoin"
@@ -10,7 +10,7 @@ readme = "README.md"
 
 [dependencies]
 polars = "0.16"
-clap = "3.0.0-beta.4"
+clap = "3.0.0-beta.5"
 
 [dependencies.polars-io]
 version = "0.16"

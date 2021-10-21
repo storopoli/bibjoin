@@ -1,4 +1,4 @@
-use clap::{AppSettings, Clap};
+use clap::Parser;
 use polars::datatypes::DataType::Utf8;
 use polars::prelude::*;
 use std::fs::File;
@@ -76,8 +76,8 @@ fn drop_duplicates(df: &DataFrame, subset: &[String]) -> Result<DataFrame> {
     df.drop_duplicates(true, Some(subset))
 }
 /// Program to combine data from Scopus and Web of Science by DOI
-#[derive(Clap, Debug)]
-#[clap(setting = AppSettings::ColoredHelp)]
+#[derive(Parser, Debug)]
+#[clap(version = "0.3.0", author = "Jose Storopoli <thestoropoli@gmail.com>")]
 struct BibJoin {
     /// Scopus CSV file path
     #[clap(short, long)]
